@@ -1,0 +1,17 @@
+{
+    "name": "MENTION GRAMBER",
+    "description": "MENTION GRAMBER telegramın etiketleyici botu",
+    "logo": "https://telegra.ph/file/d93755041a041a24cdf0d.jpg",
+    "env": {
+        "TOKEN": {
+            "description": "Enter bot token."
+        },
+        "APP_ID": {
+            "description": "Get this value from my.telegram.org! Please do not steal."
+        },
+        "API_HASH": {
+            "description": "Get this value from my.telegram.org! Please do not steal."
+        }
+    },
+    "buildpacks": [{"url": "heroku/python"}]
+}
