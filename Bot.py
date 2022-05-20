@@ -40,9 +40,9 @@ async def start(event):
   )
                     
                     
-@client.on(events.NewMessage(pattern="^/help$"))
+@client.on(events.NewMessage(pattern="^/grhelp$"))
 async def help(event):
-  helptext = "**Mention Gramber Yardım Menüsü**\n\n**Komutlar**: /mentionall\n**Komut**: /cancel **Etiketlemeyi Durdurur**\n**__Bu komutun yanında herkese istediğiniz şeylerden bahsedebilirsiniz.__**\n`Örneğin: /mentionall Günaydıın!`\n**Bu komutu herhangi bir mesaja cevap olarak verebilirsiniz. Bot, kullanıcıları bu yanıtlanan mesaja etiketleyecek__**."
+  helptext = "**Mention Gramber Yardım Menüsü**\n\n**Komutlar**: /grall **Herkesi Etiketler** \n**Komut**: /cancel **Etiketlemeyi Durdurur**\n**__Bu komutun yanında herkese istediğiniz şeylerden bahsedebilirsiniz.__**\n`Örneğin: /grall Günaydıın!`\n**__Bu komutu herhangi bir mesaja cevap olarak verebilirsiniz. Bot, kullanıcıları bu yanıtlanan mesaja etiketleyecek__**."
   await event.reply(
     helptext,
     link_preview=False,
@@ -55,7 +55,7 @@ async def help(event):
 
 @client.on(events.NewMessage(pattern="^/owner$"))
 async def help(event):
-  helptext = "**Gramber Botun Sahip Menüşü**\n\n**Sahibim [GitaristBey](https://t.me/gitaristbey)**\n**Ve**\n**[qbin](https://t.me/Kenlendin)"
+  helptext = "**Gramber Botun Sahip Menüsü**\n\n**Sahibim [GitaristBey](https://t.me/gitaristbey)**"
   await event.reply(
     helptext,
     link_preview=False,
@@ -63,7 +63,7 @@ async def help(event):
 
 
   
-@client.on(events.NewMessage(pattern="^/mentionall ?(.*)"))
+@client.on(events.NewMessage(pattern="^/grall ?(.*)"))
 async def mentionall(event):
   chat_id = event.chat_id
   if event.is_private:
