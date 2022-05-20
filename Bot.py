@@ -26,7 +26,7 @@ spam_chats = []
 @client.on(events.NewMessage(pattern="^/start$"))
 async def start(event):
   await event.reply(
-    "Merhaba tatlım ben telegramdaki tüm grup üyelerini etiketlemek için tasarlandım ismim MENTION GRAMBER \n**Yardım Almak İçin Buraya Tıkla** /help\n\n**Seni Seviyoruz** [♥](https://t.me/SohbetTurkSancagi)",
+    "Merhaba tatlım ben telegramdaki tüm grup üyelerini etiketlemek için tasarlandım ismim MENTION GRAMBER \n**Yardım Almak İçin Buraya Tıkla** /grhelp\n\n**Seni Seviyoruz** [♥](https://t.me/SohbetTurkSancagi)",
     link_preview=False,
     buttons=(
       [
