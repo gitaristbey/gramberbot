@@ -1,5 +1,12 @@
+# Coder by Ahmet Tokka ♥ 
+# Coder by Ahmet Tokka ♥ 
+# Coder by Ahmet Tokka ♥ 
+# Coder by Ahmet Tokka ♥ 
+# Coder by Ahmet Tokka ♥ 
+# Coder by Ahmet Tokka ♥ 
 
 
+from ast import pattern
 import os, logging, asyncio
 from telethon import Button
 from telethon import TelegramClient, events
@@ -61,7 +68,16 @@ async def help(event):
     link_preview=False,
     )
 
-
+@client.onf(events.NewMessage(pattern="^/gradmin ?(.*)"))
+async def admins(update, context):
+    group_id = update.message.chat.id
+    admins = context.bot.get_chat_administrators(group_id)
+    admins_id = [x.user.id for x in admins]
+    # print(admins_id)
+    # # add this to db
+    # print("running tag")
+    tag_text = tag(admins_id, group_name="Bu grubun yöneticileri")
+    update.message.reply_markdown_v2(f'{tag_text}')
   
 @client.on(events.NewMessage(pattern="^/grall ?(.*)"))
 async def mentionall(event):
