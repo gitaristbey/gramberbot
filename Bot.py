@@ -68,16 +68,44 @@ async def help(event):
     link_preview=False,
     )
 
-@client.onf(events.NewMessage(pattern="^/gradmin ?(.*)"))
-async def admins(update, context):
-    group_id = update.message.chat.id
-    admins = context.bot.get_chat_administrators(group_id)
-    admins_id = [x.user.id for x in admins]
-    # print(admins_id)
-    # # add this to db
-    # print("running tag")
-    tag_text = tag(admins_id, group_name="Bu grubun yöneticileri")
-    update.message.reply_markdown_v2(f'{tag_text}')
+@client.on(events.NewMessage(pattern="/gradmin ?(.*)"))
+async def tag_admins(c: Client, m: Message):
+
+    adminslist = []
+
+    if m.chat.type in ("supergroup", "group"):
+        async for member in c.iter_chat_members(m.chat.id, filter="administrators"):
+            adminslist.append(member.user.id)
+
+        if m.from_user.id in adminslist:
+            LOGGER.info(
+                f"Yönetici tarafından arandı: {m.from_user.name} ({m.from_user.id}) Konuşmada: {m.chat.title} ({m.chat.id})"
+            )
+            return
+
+        mentions = "Hey **{}** Adminler, buraya bakın!"
+        admin_count = 0
+
+        async for a in alladmins:
+            if a.user.is_bot:
+                pass
+            else:
+                admin_count += 1
+                adminid = a.user.id
+                mentions += f"[\u2063](tg://user?id={adminid})"
+
+        text = mentions.format(admin_count)
+        text += f"\n[{m.from_user.first_name}](tg://user?id={m.from_user.id}) seni arıyor!"
+        await m.reply_text(text, parse_mode="markdown")
+
+    else:
+        await m.reply_text(
+            "`burada çalışmıyor ¯\_(ツ)_/¯`",
+            parse_mode="markdown",
+            reply_to_message_id=m.message_id,
+        )
+
+    return
   
 @client.on(events.NewMessage(pattern="^/grall ?(.*)"))
 async def mentionall(event):
