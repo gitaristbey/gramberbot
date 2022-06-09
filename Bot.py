@@ -16,6 +16,7 @@ from telethon.tl.functions.channels import GetParticipantRequest
 from telethon.errors import UserNotParticipantError
 from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
+from telethon.tl.types import ChannelParticipantsAdmins
 
 
 logging.basicConfig(
@@ -49,7 +50,7 @@ async def start(event):
                     
 @client.on(events.NewMessage(pattern="^/grhelp$"))
 async def help(event):
-  helptext = "**Mention Gramber Yardım Menüsü**\n\n**Komutlar**: /grall **Herkesi Etiketler** \n**Komut**: /cancel **Etiketlemeyi Durdurur**\n**__Bu komutun yanında herkese istediğiniz şeylerden bahsedebilirsiniz.__**\n`Örneğin: /grall Günaydıın!`\n**__Bu komutu herhangi bir mesaja cevap olarak verebilirsiniz. Bot, kullanıcıları bu yanıtlanan mesaja etiketleyecek__**."
+  helptext = "**Mention Gramber Yardım Menüsü**\n\n**Komutlar**: /grall **Herkesi Etiketler** \n**Komut**: /cancel **Etiketlemeyi Durdurur**\n**__Bu komutun yanında herkese istediğiniz şeylerden bahsedebilirsiniz.__**\n**/gradmin: Sadece Adminleri Etiketler**\n`Örneğin: /grall Günaydıın!`\n**__Bu komutu herhangi bir mesaja cevap olarak verebilirsiniz. Bot, kullanıcıları bu yanıtlanan mesaja etiketleyecek__**."
   await event.reply(
     helptext,
     link_preview=False,
@@ -68,45 +69,69 @@ async def help(event):
     link_preview=False,
     )
 
-@client.on(events.NewMessage(pattern="/gradmin ?(.*)"))
-async def tag_admins(c: Client, m: Message):
-
-    adminslist = []
-
-    if m.chat.type in ("supergroup", "group"):
-        async for member in c.iter_chat_members(m.chat.id, filter="administrators"):
-            adminslist.append(member.user.id)
-
-        if m.from_user.id in adminslist:
-            LOGGER.info(
-                f"Yönetici tarafından arandı: {m.from_user.name} ({m.from_user.id}) Konuşmada: {m.chat.title} ({m.chat.id})"
-            )
-            return
-
-        mentions = "Hey **{}** Adminler, buraya bakın!"
-        admin_count = 0
-
-        async for a in alladmins:
-            if a.user.is_bot:
-                pass
-            else:
-                admin_count += 1
-                adminid = a.user.id
-                mentions += f"[\u2063](tg://user?id={adminid})"
-
-        text = mentions.format(admin_count)
-        text += f"\n[{m.from_user.first_name}](tg://user?id={m.from_user.id}) seni arıyor!"
-        await m.reply_text(text, parse_mode="markdown")
-
-    else:
-        await m.reply_text(
-            "`burada çalışmıyor ¯\_(ツ)_/¯`",
-            parse_mode="markdown",
-            reply_to_message_id=m.message_id,
-        )
-
-    return
+@client.on(events.NewMessage(pattern="^/gradmin ?(.*)"))
+async def mentionall(event):
+  chat_id = event.chat_id
+  if event.is_private:
+    return await event.respond("__Bu komut gruplarda ve kanallarda kullanılabilir.!__")
   
+  is_admin = False
+  try:
+    partici_ = await client(ChannelParticipantsAdmins(
+      event.chat_id,
+      event.sender_id
+    ))
+  except UserNotParticipantError:
+    is_admin = False
+  else:
+    if (
+      isinstance(
+        partici_.participant,
+        (
+          ChannelParticipantsAdmins
+        )
+      )
+    ):
+      is_admin = True
+  if not is_admin:
+    return await event.respond("__Yalnızca yöneticiler Kullanabilir!__")
+  
+  if event.pattern_match.group(1) and event.is_reply:
+    return await event.respond("__Bana bir argüman ver!__")
+  elif event.pattern_match.group(1):
+    mode = "text_on_cmd"
+    msg = event.pattern_match.group(1)
+  elif event.is_reply:
+    mode = "text_on_reply"
+    msg = await event.get_reply_message()
+    if msg == None:
+        return await event.respond("__Eski mesajlar için üyelerden bahsedemem! (gruba eklenmeden önce gönderilen mesajlar)__")
+  else:
+    return await event.respond("__Bir mesajı yanıtlayın veya başkalarından bahsetmem için bana bir metin verin!__")
+  
+  spam_chats.append(chat_id)
+  usrnum = 0
+  usrtxt = ''
+  async for usr in client.iter_participants(chat_id):
+    if not chat_id in spam_chats:
+      break
+    usrnum += 1
+    usrtxt += f"[{usr.first_name}](tg://user?id={usr.id}) "
+    if usrnum == 5:
+      if mode == "text_on_cmd":
+        txt = f"{usrtxt}\n\n{msg}"
+        await client.send_message(chat_id, txt)
+      elif mode == "text_on_reply":
+        await msg.reply(usrtxt)
+      await asyncio.sleep(2)
+      usrnum = 0
+      usrtxt = ''
+  try:
+    spam_chats.remove(chat_id)
+  except:
+    pass
+
+
 @client.on(events.NewMessage(pattern="^/grall ?(.*)"))
 async def mentionall(event):
   chat_id = event.chat_id
