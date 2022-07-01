@@ -62,15 +62,11 @@ async def help(event):
   )
 
   @client.on(events.NewMessage(pattern="^/cancel@MentionGramberBot"))
-async def deletemessage(event):
+async def delmessage(event):
   deletemessage = "Botu Durdurmak İçin Lütfen Buna Tıklayın => /cancel"
   await event.reply(
-    deletemessage
+    deletemessage,
     link_preview=False,
-    buttons=(
-      [
-        Button.url('❤️ Grubumuz ❤️', 'https://t.me/SohbetTurkSancagi'),
-      ]
     )
     
 @client.on(events.NewMessage(pattern="^/owner$"))
