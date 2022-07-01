@@ -61,6 +61,17 @@ async def help(event):
     )
   )
 
+  @client.on(events.NewMessage(pattern="^/cancel@MentionGramberBot"))
+async def help(event):
+  await event.reply(
+    "Botu Durdurmak İçin Lütfen Buna Tıklayın => /cancel",
+    link_preview=False,
+    buttons=(
+      [
+        Button.url('❤️ Grubumuz ❤️', 'https://t.me/SohbetTurkSancagi'),
+      ]
+    )
+
 @client.on(events.NewMessage(pattern="^/owner$"))
 async def help(event):
   helptext = "**Gramber Botun Sahip Menüsü**\n\n**Sahibim [GitaristBey](https://t.me/gitaristbey)**"
