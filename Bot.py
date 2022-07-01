@@ -61,13 +61,16 @@ async def help(event):
     )
   )
 
-  @client.on(events.NewMessage(pattern="^/cancel@MentionGramberBot"))
-async def delmessage(event):
-  deletemessage = "Botu Durdurmak İçin Lütfen Buna Tıklayın => /cancel"
-  await event.reply(
-    deletemessage,
-    link_preview=False,
-    )
+@client.on(events.NewMessage(pattern="^/cancel@MentionGramberBot"))
+async def cancel_spam(event):
+  if not event.chat_id in spam_chats:
+    return await event.respond('__Devam eden bir süreç yok...__')
+  else:
+    try:
+      spam_chats.remove(event.chat_id)
+    except:
+      pass
+    return await event.respond('__Durduruldu.__')
     
 @client.on(events.NewMessage(pattern="^/owner$"))
 async def help(event):
@@ -141,16 +144,6 @@ async def mentionall(event):
   except:
     pass
 
-@client.on(events.NewMessage(pattern="^/cancel$"))
-async def cancel_spam(event):
-  if not event.chat_id in spam_chats:
-    return await event.respond('__Devam eden bir süreç yok...__')
-  else:
-    try:
-      spam_chats.remove(event.chat_id)
-    except:
-      pass
-    return await event.respond('__Durduruldu.__')
 
 print(">> Gramber Bot Çalışıyor <<")
 client.run_until_disconnected()
